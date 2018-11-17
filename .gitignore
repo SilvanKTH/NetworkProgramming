@@ -4,3 +4,5 @@
 /HW1/HangmanGame/build/
 
 *.class
+/HW2/NonBlockingSockets/nbproject/private/
+/HW2/NonBlockingSockets/build/
