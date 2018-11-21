@@ -87,8 +87,13 @@ public class GameServer {
 
     private void sendStream(SelectionKey key) throws IOException {
         ClientHandler client = (ClientHandler) key.attachment();
-        client.sendMessages();
-        key.interestOps(SelectionKey.OP_READ);
+        try {
+            key.interestOps(SelectionKey.OP_READ);
+            client.sendMessages();
+        }catch (IOException ioe){
+            ioe.printStackTrace();
+        }
+        
     }
 
     private void disconnect(SelectionKey key) throws IOException {

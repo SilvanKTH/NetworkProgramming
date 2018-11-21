@@ -5,16 +5,16 @@
  */
 package ClientStartup;
 
-import ClientView.HangmanGame;
+import ClientView.HangmanClient;
 /**
  *
  * @author silvanzeller
  */
 public class Main {
     
-    public static void main (String[] args){
-        HangmanGame hg = new HangmanGame();
-        hg.start();
+    public static void main (String[] args) {
+      
+        Thread someThread = new Thread(new HangmanClient());
+        someThread.start();    
     }
-    
 }

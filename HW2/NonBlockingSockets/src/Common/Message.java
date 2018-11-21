@@ -98,8 +98,4 @@ public class Message {
     public String getDelimiter(){
         return delimiter;
     }
-    
-    
-    
-    
 }

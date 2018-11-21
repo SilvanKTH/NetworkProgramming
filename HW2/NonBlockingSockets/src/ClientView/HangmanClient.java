@@ -6,48 +6,43 @@
 package ClientView;
 
 import ClientController.Controller;
-import ClientNet.ServerMessageHandler;
 import Common.SynchronizedStdOut;
 import Common.MessageType;
 import Common.Message;
 
 import java.io.IOException;
 import java.util.Scanner;
+import ClientNet.ServerResponse;
 
 /**
  *
  * @author silvanzeller
  */
-public class HangmanGame implements Runnable {
+public class HangmanClient implements Runnable {
     
     private final String WELCOME_MESSAGE = "Type 'connect HOST PORT' to connect to server and 'quit' to exit the game";
-    private boolean clientRunning = false;
+    private boolean clientRunning = true;
     private boolean gameRunning = false;
-    private SynchronizedStdOut consoleOut;
+    private SynchronizedStdOut consoleOut = new SynchronizedStdOut();
     private Scanner input = new Scanner(System.in);
-    private Controller controller = new Controller(); // (new ServerMessageOutput())
+    private Controller controller = new Controller(new ServerMessageOutput()); // (new ServerMessageOutput())
     private boolean connected = false;
-
-    public void start(){
-        gameRunning = true;
-        new Thread(this).start();
-    }
 
     @Override
     public void run() {
         while (clientRunning){
             consoleOut.println(WELCOME_MESSAGE);
             try {
-                CommandLine cmd = new CommandLine(input.nextLine());
-                switch (cmd.getCommand()){
+                CommandLine cli = new CommandLine(input.nextLine());
+                switch (cli.getCommand()){
                     case CONNECT:
                         if(connected){
                             consoleOut.println("You're already connected");
                         }
                         else {
                             consoleOut.println("Trying to connect to server");
-                            String host = cmd.getArgs()[0];
-                            int port = Integer.valueOf(cmd.getArgs()[1]);
+                            String host = cli.getArgs()[0];
+                            int port = Integer.valueOf(cli.getArgs()[1]);
                             controller.connect(host, port);
                         }
                         break;
@@ -71,7 +66,7 @@ public class HangmanGame implements Runnable {
                     case GUESS:
                         if(connected){
                             if(gameRunning){
-                                String guess = cmd.getArgs()[0];
+                                String guess = cli.getArgs()[0];
                                 controller.makeGuess(guess);
                             } else {
                                 consoleOut.println("Type 'start' to begin a new game");
@@ -85,11 +80,10 @@ public class HangmanGame implements Runnable {
             } catch (Exception e){
                 e.printStackTrace();
             }
-        }
-            
+        }            
     }
     
-    public class ServerMessageOutput implements ServerMessageHandler{
+    public class ServerMessageOutput implements ServerResponse{
 
         @Override
         public void handleMessage(Message message) {

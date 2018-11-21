@@ -10,7 +10,7 @@ import Common.Message;
  *
  * @author silvanzeller
  */
-public interface ServerMessageHandler{
+public interface ServerResponse{
     
     void handleMessage(Message message);
     void disconnected();

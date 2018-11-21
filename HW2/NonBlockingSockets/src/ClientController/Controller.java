@@ -5,8 +5,10 @@
  */
 package ClientController;
 
-import ClientNet.Connection;
-import ClientNet.ServerMessageHandler;
+import ClientNet.ServerConnection;
+import ClientNet.ServerResponse;
+import ClientView.HangmanClient;
+import ClientView.HangmanClient.ServerMessageOutput;
 
 /**
  *
@@ -14,24 +16,29 @@ import ClientNet.ServerMessageHandler;
  */
 public class Controller {
     
-    ServerMessageHandler serverMessageHandler;
+    ServerResponse serverMessageHandler;
     
-    private Connection c = new Connection(serverMessageHandler);
+    private ServerConnection sc = new ServerConnection(serverMessageHandler);
+    private ServerMessageOutput serverMessageOutput;
+
+    public Controller(ServerMessageOutput serverMessageOutput) {
+        this.serverMessageOutput = serverMessageOutput;
+    }
 
     public void connect(String host, int port) {
-        c.connect(host, port);
+        sc.connect(host, port);
     }
 
     public void disconnect() {
-        c.disconnect();
+        sc.disconnect();
     }
 
     public void startGame() {
-        c.startGame();
+        sc.startGame();
     }
 
     public void makeGuess(String guess) {
-        c.makeGuess(guess);
+        sc.makeGuess(guess);
     }
     
 }

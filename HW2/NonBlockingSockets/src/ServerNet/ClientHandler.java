@@ -69,13 +69,11 @@ public class ClientHandler implements Runnable {
                             disconnect();
                             break;
                         case START:
-                            //controller.startNewGame(message);
                             Message start = controller.startNewGame(message);
                             prepareMessage(start);
                             break;
                         case GUESS:
                             if (message.isGameRunning()){
-                                //controller.makeGuess(message);
                                 Message guess = controller.makeGuess(message);
                                 prepareMessage(guess);
                             } else {

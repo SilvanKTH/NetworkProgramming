@@ -23,19 +23,20 @@ import java.util.StringJoiner;
  *
  * @author silvanzeller
  */
-public class Connection implements Runnable {
+public class ServerConnection implements Runnable {
 
-    ServerMessageHandler messageHandler;
+    ServerResponse messageHandler;
     private final Queue<ByteBuffer> messagesToSend = new ArrayDeque<>(); 
     private volatile boolean connected;
-    private SocketChannel socket;
+    private SocketChannel socketChannel;
     Selector selector;
     private InetSocketAddress serverAddress;
     private static final int MAX_SIZE = 512;
     private final ByteBuffer messageFromServer = ByteBuffer.allocate(MAX_SIZE);
     private Message message = null;
+    private volatile boolean timeToSend = false;
 
-    public Connection (ServerMessageHandler messageHandler){
+    public ServerConnection (ServerResponse messageHandler){
         this.messageHandler = messageHandler;
     }
       
@@ -47,7 +48,12 @@ public class Connection implements Runnable {
             initSelector();
             
             while(connected || !messagesToSend.isEmpty()){
-                socket.keyFor(selector).interestOps(SelectionKey.OP_WRITE);
+                
+                if(timeToSend){
+                    socketChannel.keyFor(selector).interestOps(SelectionKey.OP_WRITE);
+                    timeToSend = false;
+                }
+                
                 selector.select();
                 for (SelectionKey key : selector.selectedKeys()){
                     selector.selectedKeys().remove(key);
@@ -76,27 +82,27 @@ public class Connection implements Runnable {
     }
 
     private void initSocket() throws IOException{
-        socket = SocketChannel.open();
-        socket.configureBlocking(false);
-        socket.connect(serverAddress);
+        socketChannel = SocketChannel.open();
+        socketChannel.configureBlocking(false);
+        socketChannel.connect(serverAddress);
         connected = true;
     }
 
     private void initSelector() throws IOException {
         selector = Selector.open();
-        socket.register(selector, SelectionKey.OP_CONNECT);
+        socketChannel.register(selector, SelectionKey.OP_CONNECT);
     }
 
     private void establishConnection(SelectionKey key) throws IOException {
-        socket.finishConnect();
+        socketChannel.finishConnect();
         key.interestOps(SelectionKey.OP_READ);
-        InetSocketAddress remoteIP = (InetSocketAddress) socket.getRemoteAddress();
+        InetSocketAddress remoteIP = (InetSocketAddress) socketChannel.getRemoteAddress();
         messageHandler.handleMessage(new Message(MessageType.INFO, "Connected to "+remoteIP.getAddress().getHostAddress()+":"+remoteIP.getPort(), true));        
     }
 
     private void receiveMessage() throws IOException {
         messageFromServer.clear();
-        int count = socket.read(messageFromServer);
+        int count = socketChannel.read(messageFromServer);
         if (count == -1){
             throw new IOException("No server connection");
         }
@@ -108,7 +114,7 @@ public class Connection implements Runnable {
         ByteBuffer buffer;
         synchronized(messagesToSend){
             while((buffer = messagesToSend.peek()) != null){
-                socket.write(buffer);
+                socketChannel.write(buffer);
                 if (buffer.hasRemaining()){
                     return;
                 }
@@ -121,8 +127,8 @@ public class Connection implements Runnable {
     }
 
     private void forceDisconnect() throws IOException {
-        socket.close();
-        socket.keyFor(selector).cancel();
+        socketChannel.close();
+        socketChannel.keyFor(selector).cancel();
         synchronized(this){
             connected = false;
         }
@@ -168,7 +174,7 @@ public class Connection implements Runnable {
                     receivedMessage = new Message(messageType, message, currentWord, remainingAttempts, score, isGameRunning);
                     break;
                 }
-            default:
+            case 7:
                 {
                     MessageType messageType = MessageType.valueOf(messageAsStringArray[0]);
                     String message = messageAsStringArray[1];
@@ -239,6 +245,7 @@ public class Connection implements Runnable {
             }
             wrapMessage(sj);
         }
+        timeToSend = true;
         selector.wakeup();
     }
 
