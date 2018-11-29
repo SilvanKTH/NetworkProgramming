@@ -8,6 +8,7 @@ package Server.Controller;
 import Common.ServerMethods;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,6 +18,9 @@ import java.util.List;
 public class Controller extends UnicastRemoteObject implements ServerMethods {
 
     private boolean success = false;
+    List<String> allFiles = new ArrayList<>();
+    String[] file1 = null;
+    String[] file2 = new String [] {"1","2","3"};
 
     public Controller() throws RemoteException {
     }
@@ -31,11 +35,81 @@ public class Controller extends UnicastRemoteObject implements ServerMethods {
         }
         return success;
     }
-/*
+    
+    @Override
+    public boolean unregister(String username, String password) throws RemoteException {
+        System.out.println(username+" "+password);
+        if (username.equals(password)){
+            success = false;
+        } else{
+            success = true;
+        }
+        return success;
+    }
     @Override
     public long login(String username, String password) throws RemoteException {
-        return 0;
+        long userId = -1;
+        System.out.println(username+" "+password);
+        if (username.equals(password)){
+            userId = 0;
+        } else{
+            userId = 1;
+        }
+        return userId;       
     }
+    
+    @Override
+    public boolean logout(long userId) throws RemoteException {
+        System.out.println(userId);
+        if (userId <= 0){
+            success = false;
+        } else{
+            success = true;
+        }
+        return success;
+    }
+    
+    @Override
+    public List<String> list(long userId) throws RemoteException{        
+        if (userId <= 0){
+            allFiles.add("failure");
+        } else{
+            allFiles.add("success!");
+        }
+        return allFiles;
+    }
+    
+    @Override
+    public String[] readFile(String filename, long userId) throws RemoteException{
+        if (userId > 0){
+            return file2;
+        } 
+        else {
+            return file1;
+        }
+    }
+    
+    @Override
+    public boolean hasWritePermission(String filename, long userId) throws RemoteException{
+        System.out.println(userId);
+        if (userId <= 0){
+            success = false;
+        } else{
+            success = true;
+        }
+        return success;
+    }
+    
+    @Override
+    public boolean writeFile(String filename, String input) throws RemoteException{
+        if (filename.equalsIgnoreCase(input)){
+            success = false;
+        } else{
+            success = true;
+        }
+        return success;
+    }
+/*
 
     //@Override
     //public void upload(String filename, String owner, int size) throws RemoteException {
@@ -46,35 +120,6 @@ public class Controller extends UnicastRemoteObject implements ServerMethods {
     //public void download(String filename) throws RemoteException {
     //    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     //}
-
-    @Override
-    public boolean unregister(String username, String password) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean logout(long userId) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public List<String> list(long userId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String[] readFile(String filname, long userId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean writeFile(String filename, String input) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean hasWritePermission(String filename, long userId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    
 */    
 }

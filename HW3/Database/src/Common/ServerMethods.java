@@ -18,13 +18,13 @@ public interface ServerMethods extends Remote {
     public static final String Host = "localhost:1099";
     
     public boolean register(String username, String password) throws RemoteException;
-    //public boolean unregister(String username, String password) throws RemoteException;
-    //public long login(String username, String password) throws RemoteException;
-    //public boolean logout(long userId) throws RemoteException;
-    //public List<String> list(long userId);
-    //public String[] readFile(String filename, long userId);
-    //public boolean hasWritePermission(String filename, long userId);
-    //public boolean writeFile(String filename, String input);
+    public boolean unregister(String username, String password) throws RemoteException;
+    public long login(String username, String password) throws RemoteException;
+    public boolean logout(long userId) throws RemoteException;
+    public List<String> list(long userId) throws RemoteException;
+    public String[] readFile(String filename, long userId) throws RemoteException;
+    public boolean hasWritePermission(String filename, long userId) throws RemoteException;
+    public boolean writeFile(String filename, String input) throws RemoteException;
     //public void notifyClient() throws RemoteException;
     //public void upload(String filename, String owner, int size) throws RemoteException;
     //public void download(String filename) throws RemoteException;
