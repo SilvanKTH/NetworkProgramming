@@ -317,12 +317,55 @@ public class ClientInterpreter implements Runnable {
                             consoleOut.println("Write error occured!\n");
                         }
                     }
+                } else {
+                    consoleOut.println("You need to login first!\n");
                 }
-            }    
+                consoleOut.print(PROMPT);
+            }  
+            
+            else if (userData[0].equalsIgnoreCase("delete") && userData.length == 2){
+                if(isConnected){
+                    String fileName = userData[1];
+                    boolean success = false;
+                    try {
+                        success = fileServer.deleteFile(fileName, userId);
+                        if (success){
+                            consoleOut.println("Deletion successful!");
+                        } else {
+                            consoleOut.println("Could not delete file .. ");
+                        }
+                    } catch (RemoteException ex) {
+                        ex.printStackTrace();
+                    }
+                } else {
+                    consoleOut.println("You need to login first!\n");
+                }
+                consoleOut.print(PROMPT);
+            }
+            
+            else if (userData[0].equalsIgnoreCase("access") && userData.length == 3){
+                if (isConnected){
+                    String fileName = userData[1];
+                    boolean success = false;
+                    try {
+                        success = fileServer.hasWritePermission(fileName, userId);
+                        if (success){
+                            consoleOut.println("You can write to file "+fileName);
+                        } else {
+                            consoleOut.println("Write permission for "+fileName+" denied or file does not exist");
+                        }
+                    } catch (RemoteException ex) {
+                        ex.printStackTrace();
+                    }
+                } else {
+                    consoleOut.println("You need to login first!\n");
+                }
+                consoleOut.print(PROMPT);
+            }
                 
             else if (userData[0].equalsIgnoreCase("help")){
                 consoleOut.println(HELP_MSG);
-                consoleOut.println(PROMPT);
+                consoleOut.print(PROMPT);
             }
                 
             else if (userData[0].equalsIgnoreCase("exit") | userData[0].equalsIgnoreCase("quit")){
