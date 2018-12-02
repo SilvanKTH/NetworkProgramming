@@ -13,11 +13,11 @@ import Common.ClientMethods;
  */
 public class UserInfo {
 
-    private int userId;
-    private String username;
-    private String password;
-    private ClientMethods remoteUser;
-    private boolean connected;
+    public long userId;
+    public String username;
+    public String password;
+    public ClientMethods remoteUser;
+    public boolean connected;
     
     public UserInfo(){
         userId = 0;

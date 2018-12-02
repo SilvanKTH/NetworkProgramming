@@ -55,14 +55,17 @@ public class FileDAO {
     }
 
     private void createTable(Connection connection) throws SQLException {
+        System.out.println("in createTable");
         if(!tableExists(connection)){
             Statement createTable = connection.createStatement();
-            createTable.executeUpdate("create table "+TABLE_NAME
-                    +"(name varchar(32) primary key"
-                            + "size double"
-                            + "owner varchar(32)"
-                            + "publicAccess boolean"
-                            + "writePermission boolean)");
+            System.out.println("Table is being created ...");
+            System.out.println("In executeUpdate");
+            createTable.executeUpdate("create table "+TABLE_NAME+" ("
+                    + "filename varchar(32) primary key, "
+                    + "owner varchar(32), "
+                    + "publicAccess boolean, "
+                    + "writePermission boolean, "
+                    + "notify boolean)");
         }
     }
     
@@ -71,10 +74,10 @@ public class FileDAO {
         String attributes;
         String user = Long.toString(userId);
         try {
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM " + TABLE_NAME
-                    + " WHERE owner ='"+user+"'");
+            ResultSet resultSet = statement.executeQuery("select * from "+TABLE_NAME+" "
+                    + "where owner = '"+user+"'");
             while(resultSet.next()){
-                attributes = "Filename: "+resultSet.getString("name")
+                attributes = "Filename: "+resultSet.getString("filename")
                         +"\tFilesize: "+resultSet.getDouble("size")
                         +"\tOwner: "+resultSet.getString("owner")
                         +"\tWritable: "+resultSet.getBoolean("writePermission");
@@ -89,13 +92,14 @@ public class FileDAO {
     public boolean uploadFile(String filename, double size, String userId, boolean writePermission){
         try {
             prepareStatements(connection);
-            boolean notify = true;
+            boolean publicAccess = true;
+            boolean notify = true;  
             preparedStatement.setString(1, filename);
             preparedStatement.setDouble(2, size);
             preparedStatement.setString(3, userId);
             preparedStatement.setBoolean(4, writePermission);
-            preparedStatement.setBoolean(5, notify);
-            //possibly needs to be extended
+            preparedStatement.setBoolean(5, publicAccess);
+            preparedStatement.setBoolean(6, notify);
             preparedStatement.executeUpdate();
             return true;
         } catch (SQLException ex) {
@@ -110,6 +114,7 @@ public class FileDAO {
                     + "where (name = '"+filename+"' "
                             + "and (owner = '"+userId+"') "
                                     + "(or publicAccess = 'true'))");
+            
             if(resultSet.next()){
                 return true;
             }
@@ -122,7 +127,7 @@ public class FileDAO {
     public boolean deleteFile(String filename, String userId){
         try {
             ResultSet resultSet = statement.executeQuery("select * from "+TABLE_NAME+" "
-                    + "where (name = '"+filename+"' "
+                    + "where (filename = '"+filename+"' "
                             + "and (owner = '"+userId+"') "
                                     + "(or publicAccess = 'true'))");
             if(resultSet.next()){
@@ -135,14 +140,28 @@ public class FileDAO {
         return false;
     }
     
+    public boolean hasWritePermission(String filename, String userId){
+        try{
+            ResultSet resultSet = statement.executeQuery("select * from "+TABLE_NAME+" "
+                    + "where (filename = '"+filename+"') "
+                            + "and (owner = '"+userId+"' or writePermission = 'true')");
+            if(resultSet.next()){
+                return true;
+            }
+        } catch (SQLException ex){
+            ex.printStackTrace();
+        }
+        return false;
+    }
+    
+    
     public boolean writeFile(String filename, String userId){
         try {
             ResultSet resultSet = statement.executeQuery("select * from "+TABLE_NAME+" "
-                    + "where (name = '"+filename+"' "
-                            + "and (owner = '"+userId+"') "
-                                    + "(or publicAccess = 'true' and writePermission = 'true'))");
+                    + "where (filename = '"+filename+"') "
+                            + "and ((owner = '"+userId+"') "
+                                    + "or (publicAccess = 'true' and writePermission = 'true'))");
             if(resultSet.next()){
-                statement.executeUpdate("delete from "+TABLE_NAME+" where name = '"+filename+"'");
                 return true;
             }
         } catch (SQLException ex) {
@@ -150,8 +169,21 @@ public class FileDAO {
         }
         return false;
     }
-    
-    // no set notification or notify owner
-    
-    
+
+    public String notifyOwner(String filename, String userId){
+        try {
+            ResultSet resultSet = statement.executeQuery("select * from "+TABLE_NAME+" "
+                    +"where (filename = '"+filename+"') "
+                            + "and (not owner = '"+userId+"') "
+                                    + "and (notify = 'true')");
+            if (resultSet.next()){
+                return resultSet.getString("owner");
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return "";
+    }
 }
+
+

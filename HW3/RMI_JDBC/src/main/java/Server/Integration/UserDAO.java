@@ -38,9 +38,13 @@ public class UserDAO {
     private final Random idGenerator = new Random();
     
     public UserDAO() throws ClassNotFoundException, SQLException{
+        System.out.println("Loading Driver");
         Class.forName("org.apache.derby.jdbc.ClientDriver");
+        System.out.println("Establishing connection");
         connection = DriverManager.getConnection(url, user, password);
+        System.out.println("Creating Table");
         createTable(connection);
+        System.out.println("Creating new Statement");
         statement = connection.createStatement();
     }
     
@@ -57,12 +61,15 @@ public class UserDAO {
     }
 
     private void createTable(Connection connection) throws SQLException {
+        System.out.println("in createTable");
         if(!tableExists(connection)){
+            System.out.println("Table is being created ...");
             Statement createTable = connection.createStatement();
-            createTable.executeUpdate("create table "+TABLE_NAME
-                    +"(userid bigint primary key"
-                            + "username varchar(32)"
-                            + "password varchar(32)");
+            System.out.println("In executeUpdate");
+            createTable.executeUpdate("create table "+TABLE_NAME+" ("
+                    + "userid bigint primary key, "
+                    + "username varchar(32), "
+                    + "password varchar(32))");
         }
     }
     
@@ -91,7 +98,7 @@ public class UserDAO {
             }
             long userId = 0;
             boolean isValid = false;
-            while(userId < 10 && !isValid){
+            while(!isValid){
                 userId = idGenerator.nextInt(MAX_USER);
                 resultSet = findAllUsers.executeQuery();
                 isValid = true;

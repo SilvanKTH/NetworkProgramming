@@ -19,16 +19,14 @@ public interface ServerMethods extends Remote {
     
     public boolean register(String username, String password) throws RemoteException;
     public boolean unregister(String username, String password) throws RemoteException;
-    public long login(String username, String password) throws RemoteException;
+    public long login(ClientMethods user, String username, String password) throws RemoteException;
     public boolean logout(long userId) throws RemoteException;
     public List<String> list(long userId) throws RemoteException;
     public String[] readFile(String filename, long userId) throws RemoteException;
     public boolean hasWritePermission(String filename, long userId) throws RemoteException;
-    public boolean writeFile(String filename, String input) throws RemoteException;
-    //public void notifyClient() throws RemoteException;
-    //public void upload(String filename, String owner, int size) throws RemoteException;
-    //public void download(String filename) throws RemoteException;
-
-    
+    public boolean writeFile(String filename, String input, long userId, String method) throws RemoteException;
+    public String [] downloadFile(String filename, long userId) throws RemoteException;
+    public boolean uploadFile(String filename, String[] content, long userId, boolean writePermission) throws RemoteException;
+    public boolean deleteFile(String filename, long userId) throws RemoteException;
 
 }

@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 public class FileManager {
     
     public long uploadFile (String name, String [] content){
-        name = "files/"+name;
+        //name = "files/"+name;
         File file = new File(name);
         try {
             PrintWriter toFile = new PrintWriter(new FileWriter(file));
@@ -38,7 +38,7 @@ public class FileManager {
     }
     
     public String [] downloadFile (String name){
-        name = "files/"+name;
+        //name = "files/"+name;
         boolean isReading = true;
         try {
             BufferedReader fromFile = new BufferedReader(new FileReader(name));
@@ -67,8 +67,8 @@ public class FileManager {
     public void deleteFile(String name){
         name = "files/"+name;
         File file = new File(name);
-        file.delete();
-    }
+        file.delete(); 
+   }
     
     public boolean writeToFile(String name, String input, String method){
         name = "files/"+name;
@@ -76,12 +76,12 @@ public class FileManager {
         PrintWriter toFile;
         try {
             if (method.equalsIgnoreCase("append")){            
-                toFile = new PrintWriter(new FileWriter(file));
+                toFile = new PrintWriter(new FileWriter(file, true));
                 toFile.println(input);
                 toFile.close();
                 }
             else if (method.equalsIgnoreCase("replace")){
-                toFile = new PrintWriter(new FileWriter(file, true));
+                toFile = new PrintWriter(new FileWriter(file));
                 toFile.println(input);
                 toFile.close();
             }

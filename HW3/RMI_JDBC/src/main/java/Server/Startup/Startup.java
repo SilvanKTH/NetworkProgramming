@@ -23,19 +23,19 @@ public class Startup {
     
     public static void main (String [] args) throws RemoteException, MalformedURLException{
         
-        new Startup().startMain();
+        new Startup().startDB();
         try {
             System.out.println("Trying to create new controller instance");
             Controller fileServerController = new Controller();
             System.out.println("Created new controller instance");
-            Naming.rebind(Controller.ServerName, fileServerController);    
+            Naming.rebind(Controller.ServerName, fileServerController);  
+            System.out.println("Server is running ...");
         } catch (Exception e){
             System.out.println("Could not start up server ...");
-        }
-        System.out.println("Server is running ...");
+        }   
     }
     
-    private void startMain () throws RemoteException{
+    private void startDB () throws RemoteException{
         try {
             LocateRegistry.getRegistry().list();
             System.out.println("Fetching registry");
