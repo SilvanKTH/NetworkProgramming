@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package se.kth.id1212.appserv.converter.presentation.acct;
+package se.kth.id1212.appserv.converter.presentation.currency;
 
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
