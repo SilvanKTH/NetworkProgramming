@@ -52,8 +52,8 @@ public class Currency implements CurrencyDTO{
     private int optLockVersion;
 
     public Currency(int id, String name) {
-        this.id=id;
-        this.name=name;
+        this.id = id;
+        this.name = name;
     }
     public Currency() {
         // TODO Auto-generated constructor stub

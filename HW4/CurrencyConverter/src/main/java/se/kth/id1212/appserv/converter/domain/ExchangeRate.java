@@ -22,29 +22,29 @@ import javax.validation.constraints.PositiveOrZero;
  * @author silvanzeller
  */
 @Entity
-@Table(name="CONVERT_RATE")
+@Table(name="EXCHANGE_RATE")
 public class ExchangeRate implements ExchangeRateDTO{
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    @Column(name="CONVERT_ID")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name="EXCHANGE_RATE_ID")
     private long id;
     
-    @OneToOne(cascade = CascadeType.ALL) //one to one mapping
-    @JoinColumn(name = "CURRENCY_FROM", nullable = false)// 
+    @OneToOne(cascade = CascadeType.ALL) 
+    @JoinColumn(name = "CURRENCY_FROM", nullable = false) 
     private Currency curFrom;
 	
-    @OneToOne(cascade = CascadeType.ALL) //one to one mapping
-    @JoinColumn(name = "CURRENCY_To", nullable = false)// 
+    @OneToOne(cascade = CascadeType.ALL) 
+    @JoinColumn(name = "CURRENCY_TO", nullable = false)
     private Currency curTo;
 	
-    @PositiveOrZero(message = "{convertRate.rate.negative}")
-    @Column(name = "CONVERT_RATE")
+    @PositiveOrZero(message = "{exchangeRate.rate.negative}")
+    @Column(name = "EXCHANGE_RATE")
     private double rate;
 	
 	
     @Version
-    @Column(name = "CONVERT_OPTLOCK_VERSION")
+    @Column(name = "EXCHANGE_OPTLOCK_VERSION")
     private int optLockVersion;
 	
     public ExchangeRate(long id, Currency curFrom, Currency curTo, double rate) {
@@ -93,9 +93,9 @@ public class ExchangeRate implements ExchangeRateDTO{
 
     @Override
     public String toString() {
-        return "ConvertRate [id=" + id + ", curFrom=" + curFrom
-                + ", curTo=" + curTo + ", rate=" + rate
-                + ", optLockVersion=" + optLockVersion + "]";
+        return "Exchange Rate [id = " + id + ", curFrom = " + curFrom
+                + ", curTo = " + curTo + ", rate = " + rate
+                + ", optLockVersion = " + optLockVersion + "]";
     }
 
 }

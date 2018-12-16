@@ -19,7 +19,7 @@ import se.kth.id1212.appserv.converter.domain.CurrencyDTO;
  * @author silvanzeller
  */
 
-// Extending JpaRepository allows for utilizing all implemented methods, such as save. 
+// Extending the JpaRepository grants access to functions such as save etc.. 
 // It also allows for creating custom functions --> way to convert functions into JPQL calls
 // See spring-data jpa doc  
 

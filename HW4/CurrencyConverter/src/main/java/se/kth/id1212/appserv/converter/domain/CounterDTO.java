@@ -11,6 +11,6 @@ package se.kth.id1212.appserv.converter.domain;
  */
 public interface CounterDTO {
     
-    int getCount();	
+    int getCounter();	
     void addCount();
 }

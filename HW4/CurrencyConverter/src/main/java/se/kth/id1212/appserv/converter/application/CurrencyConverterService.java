@@ -47,11 +47,11 @@ public class CurrencyConverterService {
 
     private final long COUNTER_ID=1;
 
-    private boolean DB_SETUP_STATE=false;
+    private boolean DB_SETUP=false;
     
     
     public void setUp() {
-    	if(DB_SETUP_STATE) {
+    	if(DB_SETUP) {
     		return;
     	}
     	
@@ -70,36 +70,36 @@ public class CurrencyConverterService {
     	currencyRepository.saveAll(currencyList);
     	
     	List<ExchangeRate> exchangeRateList=new ArrayList<>();
-    	ExchangeRate er1 = new ExchangeRate(1,USD,USD,1);
-    	ExchangeRate er2 = new ExchangeRate(2,SEK,USD,0.11);
-    	ExchangeRate er3 = new ExchangeRate(3,EUR,USD,1.13);
-    	ExchangeRate er4 = new ExchangeRate(4,YEN,USD,0.0088);
-    	exchangeRateList.add(er1);
-    	exchangeRateList.add(er2);
-    	exchangeRateList.add(er3);
-    	exchangeRateList.add(er4);
+    	ExchangeRate rate1 = new ExchangeRate(1,USD,USD,1);
+    	ExchangeRate rate2 = new ExchangeRate(2,SEK,USD,0.11);
+    	ExchangeRate rate3 = new ExchangeRate(3,EUR,USD,1.13);
+    	ExchangeRate rate4 = new ExchangeRate(4,YEN,USD,0.0088);
+    	exchangeRateList.add(rate1);
+    	exchangeRateList.add(rate2);
+    	exchangeRateList.add(rate3);
+    	exchangeRateList.add(rate4);
     	convertRateRepository.saveAll(exchangeRateList);
-    	DB_SETUP_STATE=true;
+    	DB_SETUP = true;
     	
     }
 
-    public void printAllCounter() {
+    public void printAllCounters() {
         List<Counter> counters = counterRepository.findAll();
-        for(Counter c:counters){
+        for(Counter c: counters){
             System.out.println(c.toString());
 	}
     }
 	
-    public void printAllConvertRate() {
+    public void printAllExchangeRates() {
 	List<ExchangeRate> rates = convertRateRepository.findAll();
         for(ExchangeRate cr:rates){
             System.out.println(cr.toString());
 	}
     }
 	
-    public void printAllCurrency() {
+    public void printAllCurrencies() {
 	List<Currency>	currencies = currencyRepository.findAll();
-        for(Currency c:currencies) {
+        for(Currency c: currencies) {
             System.out.println(c.toString());
         }
     }
@@ -119,7 +119,7 @@ public class CurrencyConverterService {
             return null;
 	}
     }
-    public void addCounterByOne() {
+    public void increaseCounter() {
         try {
             Counter counter = counterRepository.findCounterById(COUNTER_ID);
             counter.addCount();
@@ -129,7 +129,7 @@ public class CurrencyConverterService {
         }
     }
 	
-    public double getConvertRate(String fromCurr, String toCurr) throws Exception{
+    public double getExchangeRate(String fromCurr, String toCurr) throws Exception{
         List<ExchangeRate> convertRates = convertRateRepository.findAll();
         for(ExchangeRate cr : convertRates) {
             if(cr.getCurFrom().getName().equals(fromCurr) && cr.getCurTo().getName().equals(toCurr)) {
@@ -140,30 +140,30 @@ public class CurrencyConverterService {
     }
 	
     public void changeConvertRate(String fromCurr, String toCurr, double newRate) throws Exception{
-        List<ExchangeRate> convertRates = convertRateRepository.findAll();
-	for(ExchangeRate cr : convertRates) {
-            if(cr.getCurFrom().getName().equals(fromCurr) && cr.getCurTo().getName().equals(toCurr)) {
-                cr.setRate(newRate);
-		convertRateRepository.saveAndFlush(cr);
+        List<ExchangeRate> exchangeRates = convertRateRepository.findAll();
+	for(ExchangeRate er : exchangeRates) {
+            if(er.getCurFrom().getName().equals(fromCurr) && er.getCurTo().getName().equals(toCurr)) {
+                er.setRate(newRate);
+		convertRateRepository.saveAndFlush(er);
 		System.out.println("changed exchange rates "+fromCurr+" to "+toCurr);
             }
-            if(cr.getCurFrom().getName().equals(toCurr) && cr.getCurTo().getName().equals(fromCurr)) {
-		cr.setRate(1.0/newRate);
-		convertRateRepository.saveAndFlush(cr);
+            if(er.getCurFrom().getName().equals(toCurr) && er.getCurTo().getName().equals(fromCurr)) {
+		er.setRate(1.0/newRate);
+		convertRateRepository.saveAndFlush(er);
 		System.out.println("changed exchange rates "+toCurr+" to "+fromCurr);
             }
 	}
     }
 	
-	public CalculateAmountForm calculateAmount(String fromCurr, String toCurr, double amount) throws CurrencyException, Exception{
-            CalculateAmountForm form=new CalculateAmountForm();
-            form.setCurrFrom(fromCurr);
-            form.setCurrTo(toCurr);
-            form.setAmountFrom(amount);
-            double convertRate=getConvertRate(fromCurr, toCurr);
-            form.setAmountTo(amount*convertRate);
-            return form;
-	}
+    public CalculateAmountForm calculateAmount(String fromCurr, String toCurr, double amount) throws CurrencyException, Exception{
+        CalculateAmountForm form = new CalculateAmountForm();
+        form.setCurrFrom(fromCurr);
+        form.setCurrTo(toCurr);
+        form.setAmountFrom(amount);
+        double convertRate = getExchangeRate(fromCurr, toCurr);
+        form.setAmountTo(amount * convertRate);
+        return form;
+    }
 
 }
     

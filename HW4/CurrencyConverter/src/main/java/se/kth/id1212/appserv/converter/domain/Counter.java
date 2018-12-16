@@ -23,20 +23,20 @@ public class Counter implements CounterDTO {
     @Column(name = "COUNTER_ID")
     private long id;
     
-    @Column(name="count")
+    @Column(name = "count")
     private int count;
-	
-//    @Version
-//    @Column(name = "COUNTER_OPTLOCK_VERSION")
-//    private int optLockVersion;
-	
+
+    @Version
+    @Column(name = "COUNTER_OPTLOCK_VERSION")
+    private int optLockVersion;
+    
     public Counter() {
         // TODO Auto-generated constructor stub
     }
 	
     public Counter(long id,int count) {
-        this.id=id;
-        this.count=count;
+        this.id = id;
+        this.count = count;
     }
 	
     public long getId() {
@@ -51,17 +51,17 @@ public class Counter implements CounterDTO {
         this.count++;
     }
 	
-    public int getCount() {
+    public int getCounter() {
         return this.count;
     }
 
-    public void setCount(int count) {
-        this.count=count;
+    public void setCounter(int count) {
+        this.count = count;
     }
 
     @Override
     public String toString() {
-        return "Counter [id=" + id + ", count=" + count + "]";
+        return "Counter [id = " + id + ", count = " + count + "]";
     }
 }
 

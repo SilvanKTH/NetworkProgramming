@@ -16,14 +16,10 @@ import javax.validation.constraints.PositiveOrZero;
  */
 public class ChangeRateForm {
     @NotBlank(message = "Please specify currency name you want change to convert from")
-       // The regex below should permit only characters, but asterisk is
-       // unfortunately also valid.
     @Pattern(regexp = "^[a-zA-Z]+$")
     private String currFrom;
 	 
     @NotBlank(message = "Please specify currency name you want change to convert to")
-       // The regex below should permit only characters, but asterisk is
-       // unfortunately also valid.
     @Pattern(regexp = "^[a-zA-Z]+$")
     private String currTo;
 
@@ -58,7 +54,8 @@ public class ChangeRateForm {
 
     @Override
     public String toString() {
-        return "ChangeRateForm [fromCurr=" + currFrom + ", toCurr=" + currTo + ", newRate=" + newRate + "]";
+        return "ChangeRateForm [fromCurr = " + currFrom + ", toCurr = "
+                + currTo + ", newRate = " + newRate + "]";
     }
 
 }
