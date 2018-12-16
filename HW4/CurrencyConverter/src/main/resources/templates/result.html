@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculate result</title>
+</head>
+<body>
+<main layout:fragment="content">
+
+    <section>
+        <h1>Calculate Result</h1>
+        
+        <p class="form" th:object="${calculateAmountForm}">
+            Original Currency <span th:text="*{currFrom}">Missing</span></p>
+         <p class="form" th:object="${calculateAmountForm}">    
+            Target Currency <span th:text="*{currTo}">Missing</span></p>
+         <p class="form" th:object="${calculateAmountForm}">
+            Amount <span th:text="*{amountFrom}">Missing</span></p>
+          <p class="form" th:object="${calculateAmountForm}">
+			Result<span th:text="*{amountTo}">Missing</span></p>
+			
+        
+    </section>
+
+    
+</main>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Client Page</title>
+</head>
+<body>
+<main layout:fragment="content">
+<section>
+        <h1>Currency Converter</h1>
+        <p class="info">Enter desired currencies and amount here:</p>
+        <p class="info">Currently available currencies: USD SEK EUR YEN </p>
+        <form th:action="@{/result}" th:object="${calculateAmountForm}" method="post">
+            <p class="form"><label for="currency-from">Original currency</label>:<input type="text"
+                                                                           th:field="*{currFrom}"
+                                                                           id="curr-from"/>
+                <span class="error" th:if="${#fields.hasErrors('currFrom')}"
+                      th:errors="*{currFrom}">Name Error</span></p>
+			<p class="form"><label for="currency-to">Target currency</label>:<input type="text"
+                                                                           th:field="*{currTo}"
+                                                                           id="curr-to"/>
+                <span class="error" th:if="${#fields.hasErrors('currTo')}"
+                      th:errors="*{currTo}">Name Error</span></p>
+			<p class="form"><label for="currency-amount">Amount</label>:<input type="text"
+                                                                           th:field="*{amountFrom}"
+                                                                           id="amount-from"/>
+                <span class="error" th:if="${#fields.hasErrors('amountFrom')}"
+                      th:errors="*{amountFrom}">Value Error</span></p>		  
+            <p class="submit"><input type="submit" value="submit"/></p>
+        </form>
+</section>
+</main>
+</body>
+</html>

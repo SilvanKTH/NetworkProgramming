@@ -11,6 +11,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,107 +34,41 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table (name = "CURRENCY") //creates table named currency
-public class Currency implements CurrencyDTO {
-    private static final String SEQUENCE_NAME_KEY = "SEQ_NAME";
-    
-//    @OneToOne
-//    private Set<Currency> currencies = new HashSet<>(); //holds all currencies
-
+public class Currency implements CurrencyDTO{
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_NAME_KEY)
-    @SequenceGenerator(name = SEQUENCE_NAME_KEY, sequenceName = "CURRENCY_SEQUENCE") 
-    @Column(name = "CURRENCY_ID") //same as column in hibernate
-    private Long id;   
-    
-    @NotNull()
-    //@Size(min = 2, max = 10)
-    @Column(name = "CURRENCY") // column name in hibernate
-    private String currency;
-    
-    @Pattern(regexp = "\\d+") //regex for positive digits only
-    @PositiveOrZero() // only positive values (unfortunately 0 is also possible)
-    @Column(name = "EXCHANGE_RATE") // column name in hibernate
-    private float exchangeRate;
-    
-    @Pattern(regexp = "\\d+") //regex for positive digits only
-    @PositiveOrZero() // only positive values
-    private float amount;
-    
-    public Currency (String currency, float exchangeRate){
-        this.currency = currency;
-        this.exchangeRate = exchangeRate;
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    @Column(name="CURRENCY_ID")
+    private int id;
+	
+	
+    @NotNull(message = "{currency.name.missing}")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "{currency.name.invalid-char}")
+    @Size(min = 2, max = 30, message = "{currency.name.length}")
+    @Column(name = "CURRENCY_NAME")
+    private String name;
+	
+    @Version
+    @Column(name = "CURRENCY_OPTLOCK_VERSION")
+    private int optLockVersion;
+
+    public Currency(int id, String name) {
+        this.id=id;
+        this.name=name;
     }
-    
-    protected Currency(){ // required by JPA, will not be utilized
+    public Currency() {
+        // TODO Auto-generated constructor stub
     }
-    
-     @Override
-    public boolean getOwnCurrency(String currency) {
-        boolean exists = getCurrency(currency);
-        return exists;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
-    public boolean getDestCurrency(String currency) {
-        boolean exists = getCurrency(currency);
-        return exists;
-    }
-    
-    private boolean getCurrency(String currency){
-        return false;
-//        return currencies.contains(currency);
-    }
-
-    @Override
-    public float getExchangeRate(String currency) {
-        if(getCurrency(currency)){
-            return exchangeRate;
-        }
-        // error handling here
-        return -1;
-    }
-    
-    public float calcExchange(String ownCurrency, String destCurrency, float amount){
-        if(!getOwnCurrency(ownCurrency)){
-            // error handling here
-            return -1;
-        } 
-        else if(!getDestCurrency(destCurrency)){
-            // error handling here
-            return -1;
-        }
-        else{
-            return amount * (getExchangeRate(destCurrency)/getExchangeRate(ownCurrency));
-        }       
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-//    @Override
-//    public void setCurrencyAndExchangeRate(String currency, float exchangeRate) {
-//        
-//    }
-//    
-  
-    public void setCurrency(String currency){
-        this.currency = currency;
-    }
-    
-    public void setExchangeRate(float exchangeRate){
-        this.exchangeRate = exchangeRate;
-    }
-    
-    public void setAmount(float amount){
-        this.amount = amount;
-    }
-    
-    public float getAmount(){
-        return amount;
+    public String toString() {
+        return "Currency [id=" + id + ", name=" + name + "]";
     }
 }

@@ -5,15 +5,12 @@
  */
 package se.kth.id1212.appserv.converter.domain;
 
-import java.util.List;
-import java.util.Set;
-
 /**
  *
  * @author silvanzeller
  */
-public interface CurrencyDTO {
+public interface CounterDTO {
     
-    String getName();
-
+    int getCount();	
+    void addCount();
 }
