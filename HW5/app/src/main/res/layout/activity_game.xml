@@ -61,7 +61,7 @@
         android:id="@+id/gameButtonRetry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Try Agin"
+        android:text="Try Again"
         android:layout_marginTop="480sp"
         android:layout_marginRight="160dp"
         tools:layout_editor_absoluteX="29dp"

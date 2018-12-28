@@ -28,7 +28,7 @@ public class GameServer {
             serverSocket = new ServerSocket(SERVER_PORT);
             playerSocket = new Socket();
             executorService = Executors.newFixedThreadPool(MAX_PLAYERS);
-            System.out.println("Setup Server for an amount of max. "+MAX_PLAYERS+" players.");
+            System.out.println("Setup Server for an amount of max. "+MAX_PLAYERS+" players on "+serverSocket.getLocalSocketAddress());
             while(true){
                 playerSocket = serverSocket.accept();
                 playerSocket.setSoLinger(true, SO_LINGER_TIME);

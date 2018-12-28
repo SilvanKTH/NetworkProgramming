@@ -36,7 +36,7 @@ public class DisplayActivity extends AppCompatActivity {
 
 
     //onCreate is the first method called
-    //it is called with a served state of the instance
+    //it is called with a saved state of the instance
     //sets up the first view and starts the game
     @Override
     protected void onCreate(Bundle savedInstanceState){

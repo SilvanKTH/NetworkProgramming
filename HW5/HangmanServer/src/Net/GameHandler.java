@@ -39,7 +39,9 @@ public class GameHandler implements Runnable {
 
     @Override
     public void run() {
+        System.out.println("A user connected ..");
         numPlayers++;
+        System.out.println("The number of players is "+numPlayers);
         try {
             toPlayer = new PrintWriter(new OutputStreamWriter(playerSocket.getOutputStream()), true);
             fromPlayer = new BufferedReader(new InputStreamReader(playerSocket.getInputStream()));
@@ -51,10 +53,12 @@ public class GameHandler implements Runnable {
                 if (userInput.startsWith("exit")){
                     System.out.println("Disconnecting client...");
                     numPlayers--;
+                    System.out.println("The number of players is "+numPlayers);
                     playerSocket.close();
                     isConnected = false;
                 }
                 else{
+                    System.out.println("Processing message ..");
                     message = controller.checkUserInput(userInput);
                     toPlayer.println(message);
                 }

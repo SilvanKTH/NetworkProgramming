@@ -24,7 +24,7 @@ public class SocketHandler {
     private final int SO_LINGER_TIME = 10000;
     private final int SO_TIMEOUT_TIME = 100000;
 
-    private final String IP = "127.0.0.1";
+    private final String IP = "10.0.2.2";
 
     public void connect(int port, OutputHandler screenInterface){
         try {
