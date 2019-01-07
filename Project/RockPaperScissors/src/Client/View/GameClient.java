@@ -46,7 +46,7 @@ public class GameClient implements Runnable{
     public GameClient() throws SocketException, UnknownHostException{
         this.communicator = new ClientDatagramManager(this);
         consoleOutput.println(HELP_MSG);
-        consoleOutput.print(PROMPT);
+        //consoleOutput.print(PROMPT);
     }
     
     public void setUsername(String username){
@@ -66,6 +66,7 @@ public class GameClient implements Runnable{
     public void run() {
         while(true){
             try {
+                consoleOutput.print(PROMPT);
                 userInput = new BufferedReader(new InputStreamReader(System.in));
                 String userMessage = userInput.readLine().trim();
                 String[] userMessageArray = userMessage.split(SPACE);
@@ -82,12 +83,12 @@ public class GameClient implements Runnable{
                         setConnection(false);
                     } else {
                         consoleOutput.println("you need to connect first by creating a user!");
-                        consoleOutput.print(PROMPT);
+                        //consoleOutput.print(PROMPT);
                     }
                     
                 } else if (userMessageCmd.equalsIgnoreCase(HELP)){
                     consoleOutput.println(HELP_MSG);
-                    consoleOutput.print(PROMPT);
+                    //consoleOutput.print(PROMPT);
                     
                 } else if (userMessageCmd.equalsIgnoreCase(USER)){
                     if (!isConnected){
@@ -97,10 +98,10 @@ public class GameClient implements Runnable{
                         String serverResponse = username+DELIMITER;
                         serverResponse += communicator.handleMessage(userMessage);
                         consoleOutput.println(serverResponse);
-                        consoleOutput.print(PROMPT);
+                        //consoleOutput.print(PROMPT);
                     } else {
                         consoleOutput.println("you are already connected");
-                        consoleOutput.print(PROMPT);
+                        //consoleOutput.print(PROMPT);
                     }
                     
                 } else {
@@ -109,10 +110,10 @@ public class GameClient implements Runnable{
                         String serverResponse = username+DELIMITER;
                         serverResponse += communicator.handleMessage(userMessage);
                         consoleOutput.println(serverResponse);
-                        consoleOutput.print(PROMPT);
+                        //consoleOutput.print(PROMPT);
                     } else {
                         consoleOutput.println("you need to connect first by creating a user!");
-                        consoleOutput.print(PROMPT);
+                        //consoleOutput.print(PROMPT);
                     }
                     
                 }        

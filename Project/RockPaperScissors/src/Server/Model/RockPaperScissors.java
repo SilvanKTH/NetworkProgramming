@@ -30,7 +30,7 @@ public class RockPaperScissors {
     
     
     private static final int numPlayers = 3;
-    private static final int scoreToWin = 1;
+    private static final int scoreToWin = 2;
     
     ArrayList<Player> players = new ArrayList();
     
