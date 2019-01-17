@@ -14,7 +14,7 @@ public class Main {
     
     public static void main (String[] args) {
       
-        Thread someThread = new Thread(new HangmanClient());
-        someThread.start();    
+        Thread view = new Thread(new HangmanClient());
+        view.start();    
     }
 }

@@ -32,10 +32,10 @@ public class ClientHandler implements Runnable {
     private final GameServer server;
     private String clientID;
     private final SynchronizedStdOut consoleOutput = new SynchronizedStdOut();
-    private LinkedBlockingQueue<Message> messages = new LinkedBlockingQueue();
-    private final Queue<ByteBuffer> messagesToSend = new ArrayDeque();
+    private LinkedBlockingQueue<Message> messages = new LinkedBlockingQueue<>();
+    private final Queue<ByteBuffer> messagesToSend = new ArrayDeque<>();
     private Controller controller = new Controller();
-    private static final int MAX_SIZE = 512;
+    private static final int MAX_SIZE = 1024;
     private final ByteBuffer messageFromClient = ByteBuffer.allocateDirect(MAX_SIZE);
 
 
@@ -56,28 +56,36 @@ public class ClientHandler implements Runnable {
 
     @Override
     public void run() {
+        //
+        consoleOutput.println("+++in ClientHandler run()+++");
+        //
         try {
             if(!messages.isEmpty()){
                 Message message = messages.take();
-                
-                if (message.getMessageType() == null){
+                consoleOutput.println(message.toString());
+                if (message.messageType.toString() == null){
                     Message invalid = new Message(MessageType.INFO, "invalid message received");
                     prepareMessage(invalid);
                } else {
-                    switch (message.getMessageType()){
-                        case QUIT:
+                    switch (message.messageType.toString()){
+                        case "QUIT":
+                            //
+                            consoleOutput.println("+++messageType = QUIT");
+                            //
                             disconnect();
                             break;
-                        case START:
+                        case "START":
+                            consoleOutput.println("+++messageType = START");
                             Message start = controller.startNewGame(message);
                             prepareMessage(start);
                             break;
-                        case GUESS:
+                        case "GUESS":
+                            consoleOutput.println("+++messageType = GUESS");
                             if (message.isGameRunning()){
                                 Message guess = controller.makeGuess(message);
                                 prepareMessage(guess);
                             } else {
-                                Message startNewGame = new Message(MessageType.INFO, "Type start for new game", "", message.getRemainingAttempts(), message.getScore(), message.isGameRunning());
+                                Message startNewGame = new Message(MessageType.GAMEINFO, "Type start for new game", "", "", 0, message.getScore(), message.isGameRunning());
                                 prepareMessage(startNewGame);
                             }
                             break;
@@ -92,29 +100,23 @@ public class ClientHandler implements Runnable {
  
     private void prepareMessage(Message message) {
         StringJoiner sj = new StringJoiner(message.getDelimiter());
-        sj.add(message.getMessageType().toString());
-        if(message.getMessage() != null){
+        sj.add(message.messageType.toString());
+        
+        if (message.messageType.equals(MessageType.INFO)){
             sj.add(message.getMessage());
+            consoleOutput.println("DEBUG "+message.getMessage());
+        } else if (message.messageType.equals(MessageType.GAMEINFO)){
+            sj.add(message.getMessage());
+            consoleOutput.println("DEBUG "+message.getMessage());
+            sj.add(message.getCurrentWord());
+            consoleOutput.println("DEBUG "+message.getCurrentWord());
+            sj.add(message.getCorrectWord());
+            consoleOutput.println("DEBUG "+message.getCorrectWord());
+            sj.add(Integer.toString(message.getRemainingAttempts()));
+            sj.add(Integer.toString(message.getScore()));
+            sj.add(Boolean.toString(message.isGameRunning()));
         }
-        if("false".equals(String.valueOf(message.isConnectedToServer()))){
-            sj.add(String.valueOf(message.isConnectedToServer()));
-            wrapMessage(sj);
-        } else {
-            if (message.getCurrentWord() != null){
-                sj.add(message.getCurrentWord());
-            }
-            if (message.getCorrectWord().equals(message.getCurrentWord())){
-                sj.add(message.getCorrectWord());
-                sj.add(String.valueOf(message.getRemainingAttempts()));
-                sj.add(String.valueOf(message.getScore()));
-                sj.add(String.valueOf(message.isGameRunning()));
-            } else {
-                sj.add(String.valueOf(message.getRemainingAttempts()));
-                sj.add(String.valueOf(message.getScore()));
-                sj.add(String.valueOf(message.isGameRunning()));
-            }
-            wrapMessage(sj);
-        }        
+        wrapMessage(sj);
     }
 
     private void wrapMessage(StringJoiner sj) {
@@ -126,6 +128,9 @@ public class ClientHandler implements Runnable {
     }
 
     void disconnect() throws IOException{
+        //
+        consoleOutput.println("+++in disconnect() method+++");
+        //
         clientSocket.close();
         consoleOutput.println("Disconnecting client "+clientID);
     }
@@ -148,12 +153,15 @@ public class ClientHandler implements Runnable {
     }
 
     void handleMessage() throws IOException {
+        consoleOutput.println("+++in handleMessage()+++");
         messageFromClient.clear();
-        int readBytes;
-        readBytes = clientSocket.read(messageFromClient);
+        consoleOutput.println("+++before int readBytes+++");
+        int readBytes = clientSocket.read(messageFromClient);
         if (readBytes == -1){
+            consoleOutput.println("+++readBytes = -1+++");
             throw new IOException ("Client closed the connection");
         }
+        consoleOutput.println("+++before readFromBuffer()+++");
         Message message = readFromBuffer(messageFromClient);
         synchronized(this){
             messages.add(message);
@@ -162,55 +170,39 @@ public class ClientHandler implements Runnable {
     }
 
     private Message readFromBuffer(ByteBuffer byteBuffer) {
+        consoleOutput.println("in readFromBuffer() method");
         byteBuffer.flip();
         byte[] remainingBytes = new byte[messageFromClient.remaining()];
         messageFromClient.get(remainingBytes);
-        String messageAsString = StandardCharsets.UTF_8.decode(byteBuffer).toString();
+        String messageAsString = new String(remainingBytes);
         Message receivedMessage = new Message(MessageType.INFO);
         String [] messageAsStringArray = messageAsString.split(receivedMessage.getDelimiter());
-        switch (messageAsStringArray.length) {
-            case 1:
+        consoleOutput.println(messageAsString);
+        MessageType messageType = MessageType.valueOf(messageAsStringArray[0]);
+        consoleOutput.println("DEBUG: "+messageType.toString());
+
+        switch (messageType) {
+            case QUIT:
                 {
-                    MessageType messageType = MessageType.valueOf(messageAsStringArray[0]);
                     receivedMessage = new Message(messageType);
                     break;
                 }
-            case 2:
+            case START:
                 {
-                    MessageType messageType = MessageType.valueOf(messageAsStringArray[0]);
-                    String message = messageAsStringArray[1];
-                    receivedMessage = new Message(messageType, message);
+                    int score = Integer.valueOf(messageAsStringArray[1]);
+                    boolean isConnected = Boolean.valueOf(messageAsStringArray[2]);
+                    receivedMessage = new Message(messageType, score, isConnected);
                     break;
                 }
-            case 3:
+            case GUESS:
                 {
-                    MessageType messageType = MessageType.valueOf(messageAsStringArray[0]);
-                    String message = messageAsStringArray[1];
-                    boolean connectedToServer = Boolean.valueOf(messageAsStringArray[2]);
-                    receivedMessage = new Message(messageType, message, connectedToServer);
-                    break;
-                }
-            case 6:
-                {
-                    MessageType messageType = MessageType.valueOf(messageAsStringArray[0]);
-                    String message = messageAsStringArray[1];
-                    String currentWord = messageAsStringArray[2];
-                    int remainingAttempts = Integer.valueOf(messageAsStringArray[3]);
-                    int score = Integer.valueOf(messageAsStringArray[4]);
-                    boolean isGameRunning = Boolean.valueOf(messageAsStringArray[5]);        
-                    receivedMessage = new Message(messageType, message, currentWord, remainingAttempts, score, isGameRunning);
-                    break;
-                }
-            default:
-                {
-                    MessageType messageType = MessageType.valueOf(messageAsStringArray[0]);
-                    String message = messageAsStringArray[1];
+                    String guess = messageAsStringArray[1];
                     String currentWord = messageAsStringArray[2];
                     String correctWord = messageAsStringArray[3];
                     int remainingAttempts = Integer.valueOf(messageAsStringArray[4]);
                     int score = Integer.valueOf(messageAsStringArray[5]);
-                    boolean isGameRunning = Boolean.valueOf(messageAsStringArray[6]);
-                    receivedMessage = new Message(messageType, message, currentWord, correctWord,remainingAttempts, score, isGameRunning);
+                    boolean gameRunning = Boolean.valueOf(messageAsStringArray[6]);
+                    receivedMessage = new Message(messageType, guess, currentWord, correctWord, remainingAttempts, score, gameRunning);
                     break;
                 }
         }

@@ -5,20 +5,19 @@
  */
 package Common;
 
-import Common.MessageType;
 /**
  *
  * @author silvanzeller
  */
 public class Message {
 
-    private MessageType messageType;
+    public MessageType messageType;
     private String message;
     private boolean connectedToServer;
     private String currentWord;
     private String correctWord;
     private int remainingAttempts;
-    private int score;
+    private int score = 0;
     private boolean gameRunning;
     private MessageType MessageType;
     private String delimiter = "#";

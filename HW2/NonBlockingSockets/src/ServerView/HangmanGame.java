@@ -14,7 +14,7 @@ import Common.SynchronizedStdOut;
  */
 public class HangmanGame {
     private SynchronizedStdOut consoleOut = new SynchronizedStdOut();
-    private String correctWord;
+    //private String correctWord;
 
     public Message startNewGame(Message init) {
         consoleOut.println("Starting new game");
@@ -24,22 +24,24 @@ public class HangmanGame {
             boolean gameRunning = true;
             
             ChooseWord randomWord = new ChooseWord();
-            correctWord = randomWord.getWord();
+            String correctWord = randomWord.getWord().toUpperCase();
             StringBuilder currentWord = new StringBuilder();
-            int wordLength = currentWord.length();
+            int wordLength = correctWord.length();
             for (int i = 0; i < wordLength; i++){
                 currentWord.append("-");
             }
             msg = new Message(MessageType.GAMEINFO, "Game started", currentWord.toString(), correctWord, wordLength, score, gameRunning);
             consoleOut.println("Debug: "+correctWord);
+            consoleOut.println("Debug: "+currentWord.toString());
             
         }catch (Exception e){
-            
+            e.printStackTrace();
         }        
         return msg;
     }
 
     public Message makeGuess(Message guess) {
+        consoleOut.println("in makeGuess()");
         String userGuess = guess.getMessage().toUpperCase();
         String correctWord = guess.getCorrectWord();
         StringBuilder currentWord = new StringBuilder(guess.getCurrentWord());

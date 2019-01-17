@@ -5,6 +5,7 @@
  */
 package ServerNet;
 
+import Common.SynchronizedStdOut;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import static java.net.SocketOptions.SO_TIMEOUT;
@@ -23,12 +24,15 @@ import java.util.logging.Logger;
  */
 public class GameServer {
     
+    private final SynchronizedStdOut consoleOutput = new SynchronizedStdOut();
+
     private static final int LINGER_TIME = 10000;
     private static final int PORT_NUMBER = 2222;
     private Selector selector;
     private ServerSocketChannel channel;
     
     public void serve() throws IOException{
+        consoleOutput.println("+++in serve() method+++");
         try {
             selector = Selector.open();
         } catch (IOException ioe) {
@@ -39,6 +43,7 @@ public class GameServer {
             channel.configureBlocking(false);
             channel.bind(new InetSocketAddress(PORT_NUMBER));
             channel.register(selector, SelectionKey.OP_ACCEPT);
+            consoleOutput.println("+++serve() connectable on "+channel.getLocalAddress());
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
@@ -53,12 +58,15 @@ public class GameServer {
                     continue;
                 }
                 if(key.isAcceptable()){
+                    consoleOutput.println("+++serve() key is acceptable+++");
                     startHandler(key);
                 }
                 else if (key.isReadable()){
+                    consoleOutput.println("+++serve() key is readable+++");
                     receiveStream(key);
                 }
                 else if (key.isWritable()){
+                    consoleOutput.println("+++serve() key is writable+++");
                     sendStream(key);
                 }
             }
@@ -71,25 +79,32 @@ public class GameServer {
         clientSocket.configureBlocking(false);
         
         ClientHandler clientHandler = new ClientHandler(this, clientSocket);
+        consoleOutput.println("in startHandler(), created new ClientHandler instance");
         clientSocket.register(selector, SelectionKey.OP_READ, clientHandler);
         clientSocket.setOption(StandardSocketOptions.SO_LINGER, LINGER_TIME);
     }
 
     private void receiveStream(SelectionKey key) throws IOException {
         ClientHandler client = (ClientHandler) key.attachment();
+        //
+        consoleOutput.println("+++in receiveStream()+++");
+        consoleOutput.println(key.attachment().toString());
+        //
+
         try{
             client.handleMessage();   
         } catch (IOException ioe){
+            consoleOutput.println("+++Could not enter handleMessage()+++");
             disconnect(key);
         }
-             
+        
     }
 
     private void sendStream(SelectionKey key) throws IOException {
         ClientHandler client = (ClientHandler) key.attachment();
-        try {
-            key.interestOps(SelectionKey.OP_READ);
+        try {            
             client.sendMessages();
+            key.interestOps(SelectionKey.OP_READ);
         }catch (IOException ioe){
             ioe.printStackTrace();
         }

@@ -21,8 +21,8 @@ class CommandLine {
     
     private void getCommandType(String input){
         try {
-            String[] args = input.split(DELIMITER);
-            command = Command.valueOf(args[0].toUpperCase());
+            String[] arguments = input.split(DELIMITER);
+            command = Command.valueOf(arguments[0].toUpperCase());
         } catch (Exception e){
             command = Command.GUESS;
         }        
@@ -36,7 +36,8 @@ class CommandLine {
         if(command != command.CONNECT){
             return input;
         }
-        int commandLength = command.toString().length() +1;
+        int commandLength = command.toString().length() + 1;
+        //int commandLength = command.toString().length();
         String onlyArgs = input.substring(commandLength);
         return onlyArgs;
     }
